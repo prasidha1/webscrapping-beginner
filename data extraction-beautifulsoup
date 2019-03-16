@@ -1,0 +1,20 @@
+#!/usr/bin/env python
+from bs4 import BeautifulSoup
+import urllib2
+
+# Opens the required website
+html_page = urllib2.urlopen("https://www.nytimes.com/search?query=HIV&sort=best")
+soup = BeautifulSoup(html_page)
+
+# Extract the title of the article
+items = soup.find_all("div", attrs={"class": "css-138we14"})
+for item in items:
+   title= item.parent.h4.text
+   print("{}:{}".format("Title",title))
+   
+# Extract the body of the article
+subjects = soup.find_all("p", attrs={"class": "css-1dwgixl"})
+for subject in subjects:
+   body= subject.text
+   print("{}:{}".format("Subject", body))
+   
