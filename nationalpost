@@ -1,0 +1,37 @@
+# -*- coding: utf-8 -*-
+import scrapy
+
+
+class NationalpostSpider(scrapy.Spider):
+    name = "nationalpost"
+    allowed_domains = ["www.nationalpost.com/m/search/index.html?q=HIV"]
+    start_urls = (
+        'http://www.nationalpost.com/m/search/index.html?q=HIV/',
+    )
+
+    def parse(self, response):
+
+        articles = response.xpath('//*[@class="l lp"]//p')
+
+
+        for article in articles:
+
+            header = article.xpath(".//*[@href]/text()").extract_first()
+ 
+
+            body = article.xpath('.//*[@class="ts"]/text()').extract_first()
+ 
+            footer = article.xpath('.//*[@class="td"]/text()').extract_first()
+
+            yield {'header':header}
+            yield {'body':body}
+            yield {'footer':footer}
+       
+        next_page_url = response.xpath('//*[@href="?q=HIV&o=8"]/@href').extract_first()
+
+        absolute_next_page_url = response.urljoin(next_page_url)
+       
+        yield scrapy.request(absolute_next_page_url)
+
+
+ 
