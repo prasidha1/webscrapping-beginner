@@ -4,7 +4,7 @@ import scrapy
 
 class NationalpostSpider(scrapy.Spider):
     name = "nationalpost"
-    allowed_domains = ["www.nationalpost.com/m/search/index.html?q=HIV"]
+    allowed_domains = ["www.nationalpost.com"]
     start_urls = (
         'http://www.nationalpost.com/m/search/index.html?q=HIV/',
     )
@@ -23,15 +23,25 @@ class NationalpostSpider(scrapy.Spider):
  
             footer = article.xpath('.//*[@class="td"]/text()').extract_first()
 
-            yield {'header':header}
-            yield {'body':body}
-            yield {'footer':footer}
+            print 'Header: '+header
+            print 'Body: '+ body
+            print 'Footer: '+footer
+            print '\n'
+  
+        next_page_url = response.xpath('//*[@class = "lp ts tr"]//@href').extract_first()
        
-        next_page_url = response.xpath('//*[@href="?q=HIV&o=8"]/@href').extract_first()
+        if next_page_url: 
+           absolute_next_page_url = response.urljoin(next_page_url)
+       
+           yield scrapy.Request(absolute_next_page_url)
 
-        absolute_next_page_url = response.urljoin(next_page_url)
+        next_page_url1 = response.xpath('//*[@class = "lp ts tc"]//@href')[1].extract()  
+      
+        if next_page_url1: 
+           absolute_next_page_url1 = response.urljoin(next_page_url1)
        
-        yield scrapy.request(absolute_next_page_url)
+           yield scrapy.Request(absolute_next_page_url1)
+
 
 
  
